@@ -1,31 +1,3 @@
-// const answers = [];
-
-// const left_svg = document.getElementById('레이어_1');
-// left_svg.childNodes.forEach(node => {
-//     if (
-//         node.nodeType === 1 && // ELEMENT_NODE (not text, comment, document)
-//         node.tagName !== 'image'
-//         // && ['polygon', 'rect', 'path', 'circle', 'ellipse', 'line', 'polyline'].includes(node.tagName)
-//     ) {
-//         answers.push(node);
-//     }
-// });
-
-// const right_svg = document.getElementById('레이어_2');
-// left_svg.childNodes.forEach(node => {
-//     if (
-//         node.nodeType === 1 && // ELEMENT_NODE (not text, comment, document)
-//         node.tagName !== 'image'
-//         // && ['polygon', 'rect', 'path', 'circle', 'ellipse', 'line', 'polyline'].includes(node.tagName)
-//     ) {
-//         answers.push(node);
-//     }
-// });
-
-// // 결과 확인
-// console.log('answers:', answers);
-
-
 document.addEventListener("DOMContentLoaded", () => {
     const svgs = document.querySelectorAll("svg");
     const foundList = new Set();
@@ -54,13 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 else {
                     foundList.add(Number(id));
-                    console.log("틀린 부분을 찾았습니다.");
+                    console.log("틀린 부분을 찾았습니다!");
                 }
 
                 svgs.forEach(targetSvg => drawCircle(targetSvg, point.x, point.y));
 
                 if (foundList.size === answers.length) {
-                    alert("🎉 모든 틀린 부분을 찾았습니다!");
+                    alert("🎉 모든 틀린 부분을 찾았습니다!!!");
                 }
             } else {
                 // 틀린 클릭
