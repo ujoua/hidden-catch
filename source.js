@@ -1,4 +1,36 @@
-document.addEventListener("DOMContentLoaded", () => {
+// 1. 사진
+fetch('images/answer.svg')   // 왼쪽 SVG 파일 경로
+    .then(res => res.text())
+    .then(svgText => {
+        const parser = new DOMParser();
+        const leftSvg = parser.parseFromString(svgText, "image/svg+xml").querySelector("svg");
+
+        // 오른쪽 SVG 복제
+        const rightSvg = leftSvg.cloneNode(true);
+
+        // 첫 번째 <image>를 오른쪽 이미지로 교체
+        const firstImage = rightSvg.querySelector("image");
+        firstImage.setAttributeNS(
+            "http://www.w3.org/1999/xlink",
+            "xlink:href",
+            "images/R.jpg"
+        );
+
+        // id 설정
+        leftSvg.id = "레이어_1";
+        rightSvg.id = "레이어_2";
+
+        // HTML에 추가
+        const container = document.querySelector(".canvas-container");
+        container.appendChild(leftSvg);
+        container.appendChild(rightSvg);
+
+        startGame();
+    });
+
+
+// 2. 게임
+const startGame = () => {
     const svgs = document.querySelectorAll("svg");
     const foundList = new Set();
     let gameOver = false;
@@ -92,4 +124,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const timerInterval = setInterval(updateTimer, 1000);
     updateTimer();
-});
+};
