@@ -13,8 +13,8 @@
     <h1>틀린 사진 찾기</h1>
 
     <div class="canvas-container">
-        <canvas id="canvas-left" width="4000" height="2252"></canvas>
-        <canvas id="canvas-right" width="4000" height="2252"></canvas>
+        <!-- <canvas id="canvas-left" width="4000" height="2252"></canvas>
+        <canvas id="canvas-right" width="4000" height="2252"></canvas> -->
 
         <!-- <svg width="1600" height="900" style="border:1px solid #333;">
             <image href="images/1_left.jpg" x="0" y="0" width="100%" height="100%" />
@@ -25,15 +25,57 @@
             points="1304,225.5 1361,459.5 1469,698.5   1604,879.5 1700,840.5 1657,590.5 1530,164.5 " />
         </svg> -->
 
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="레이어_1"
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="레이어_1"
             x="0px" y="0px" viewBox="0 0 4000 3000" style="enable-background:new 0 0 4000 3000;" xml:space="preserve">
             <image style="overflow:visible;" width="4000" height="2252" xlink:href="images/1_left.jpg"
                 transform="matrix(-1 0 0 -1 4000 2251.9998)">
             </image>
             <polygon style="fill:none;stroke:#000000;stroke-width:20;stroke-miterlimit:10;"
                 points="1304,225.5 1361,459.5 1469,698.5   1604,879.5 1700,840.5 1657,590.5 1530,164.5 " />
-            <polygon id="myPolygon" style="fill: #000000;;stroke:#000000;stroke-width:20;stroke-miterlimit:10;"
-                points="0,0 240,216 544,266 601,112 205,-88 " />
+            <polygon id="myPolygon" style="fill: none;;stroke:none;stroke-width:20;stroke-miterlimit:10;"
+                points="0,0 240,216 544,266 601,112 205,-88 " pointer-events="all" data-id="1" />
+        </svg> -->
+
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="레이어_1"
+            x="0px" y="0px" viewBox="0 0 4000 3000" style="enable-background:new 0 0 4000 3000;" xml:space="preserve">
+            <image style="overflow:visible;" width="1080" height="810" xlink:href="images/L.jpg"
+                transform="matrix(3.7031 0 0 3.7037 0 0)">
+            </image>
+            <polygon style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                points="0.667,401.917 284.619,401.917 259.29,0.669   0.667,0.669 " />
+            <rect x="2970.838" y="0.669" style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;" width="179.97"
+                height="200.624" />
+            <path style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                d="M307.282,1168.301  c-71.146,34.324-112.691,117.273-97.317,188.587c24.517,113.724,189.568,178.309,285.286,111.012  c59.448-41.797,86.615-130.573,57.324-204.637C515.432,1169.348,397.641,1124.708,307.282,1168.301z" />
+            <path style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                d="M919.18,2357.334c-38.921,37.874-58.382,56.81-69.322,76.237  c-7.113,12.632-35.918,65.626-22.663,132.412c3.08,15.518,18.191,91.658,79.987,115.024c26.356,9.966,69.696,13.543,85.319-8.025  c18.19-25.111-20.085-58.222-38.66-136.425c-24.466-103.003,7.685-189.752-11.998-195.274  C937.897,2340.177,933.985,2342.928,919.18,2357.334z" />
+            <rect x="1037.827" y="503.567" style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;" width="329.278"
+                height="155.149" />
+            <polygon style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                points="3512.081,983.727 3498.75,1628.399 4000,1628.399   4000,983.727 " />
+            <polygon style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                points="3226.796,2222.247 3414.764,2412.171 3717.38,2412.171   3514.748,2222.247 " />
+        </svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="레이어_1"
+            x="0px" y="0px" viewBox="0 0 4000 3000" style="enable-background:new 0 0 4000 3000;" xml:space="preserve">
+            <image style="overflow:visible;" width="1080" height="810" xlink:href="images/R.jpg"
+                transform="matrix(3.7031 0 0 3.7037 0 0)">
+            </image>
+            <polygon style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                points="0.667,401.917 284.619,401.917 259.29,0.669   0.667,0.669 " />
+            <rect x="2970.838" y="0.669" style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;" width="179.97"
+                height="200.624" />
+            <path style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                d="M307.282,1168.301  c-71.146,34.324-112.691,117.273-97.317,188.587c24.517,113.724,189.568,178.309,285.286,111.012  c59.448-41.797,86.615-130.573,57.324-204.637C515.432,1169.348,397.641,1124.708,307.282,1168.301z" />
+            <path style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                d="M919.18,2357.334c-38.921,37.874-58.382,56.81-69.322,76.237  c-7.113,12.632-35.918,65.626-22.663,132.412c3.08,15.518,18.191,91.658,79.987,115.024c26.356,9.966,69.696,13.543,85.319-8.025  c18.19-25.111-20.085-58.222-38.66-136.425c-24.466-103.003,7.685-189.752-11.998-195.274  C937.897,2340.177,933.985,2342.928,919.18,2357.334z" />
+            <rect x="1037.827" y="503.567" style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;" width="329.278"
+                height="155.149" />
+            <polygon style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                points="3512.081,983.727 3498.75,1628.399 4000,1628.399   4000,983.727 " />
+            <polygon style="fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;"
+                points="3226.796,2222.247 3414.764,2412.171 3717.38,2412.171   3514.748,2222.247 " />
         </svg>
     </div>
 

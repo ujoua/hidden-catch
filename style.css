@@ -1,0 +1,22 @@
+.canvas-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+    .canvas-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+    }
+}
+
+canvas,
+svg {
+    border: 2px solid #333;
+    background-color: #f9f9f9;
+    width: 100%;
+    height: auto;
+}
