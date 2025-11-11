@@ -1,54 +1,91 @@
-const canvas_left = document.getElementById('canvas-left');
-const canvas_right = document.getElementById('canvas-right');
+// const answers = [];
 
-const context_left = canvas_left.getContext('2d');
-const context_right = canvas_right.getContext('2d');
+// const left_svg = document.getElementById('레이어_1');
+// left_svg.childNodes.forEach(node => {
+//     if (
+//         node.nodeType === 1 && // ELEMENT_NODE (not text, comment, document)
+//         node.tagName !== 'image'
+//         // && ['polygon', 'rect', 'path', 'circle', 'ellipse', 'line', 'polyline'].includes(node.tagName)
+//     ) {
+//         answers.push(node);
+//     }
+// });
 
-// const context_right = { context_left, context_right };
+// const right_svg = document.getElementById('레이어_2');
+// left_svg.childNodes.forEach(node => {
+//     if (
+//         node.nodeType === 1 && // ELEMENT_NODE (not text, comment, document)
+//         node.tagName !== 'image'
+//         // && ['polygon', 'rect', 'path', 'circle', 'ellipse', 'line', 'polyline'].includes(node.tagName)
+//     ) {
+//         answers.push(node);
+//     }
+// });
 
-// 1. 사진
-const img_left = new Image();
-img_left.src = 'images/1_left.jpg';
-img_left.onload = () => { context_left.drawImage(img_left, 0, 0, canvas_right.width, canvas_right.height); };
-
-const img_right = new Image();
-img_right.src = 'images/1_right.jpg';
-img_right.onload = () => {
-    context_right.drawImage(img_right, 0, 0, canvas_right.width, canvas_right.height);
-
-    // 2. 틀린 곳 좌표 뽑기
-    // 원 그리기
-    // context_right.beginPath();              // 경로 시작
-    // context_right.arc(1300, 183, 200, 0, Math.PI * 2); // 중심 (150,150), 반지름 50, 전체 원
-    // context_right.strokeStyle = 'red';   // 선 색상
-    // context_right.lineWidth = 20;           // 선 두께
-    // context_right.stroke();                // 테두리만 그림
-
-    // 사각형 그리기
-    // context_left.strokeStyle = 'blue';     // 선 색상
-    // context_left.lineWidth = 20;            // 선 두께
-    // context_left.strokeRect(1300, 180, 260, 100); // x, y, 너비, 높이
-
-    // 경로 그리기
-    let ctx = context_left;
-
-    ctx.strokeStyle = 'blue';     // 선 색상
-    ctx.lineWidth = 20;            // 선 두께
-    ctx.beginPath();
-    ctx.moveTo(1300, 200);       // 시작점
-    ctx.lineTo(1570, 1010);         // 오른쪽 위 (기울임)
-    // ctx.lineTo(220, 180);       // 오른쪽 아래
-    // ctx.lineTo(120, 200);       // 왼쪽 아래
-    ctx.closePath();            // 경로 닫기
-    ctx.strokeStyle = 'blue';
-    ctx.stroke();
-};
+// // 결과 확인
+// console.log('answers:', answers);
 
 
+document.addEventListener("DOMContentLoaded", () => {
+    const svgs = document.querySelectorAll("svg");
+    const foundList = new Set();
 
-const polygon = document.getElementById('myPolygon');
+    // 각 SVG의 polygon/rect/path 등을 수집
+    svgs.forEach(svg => {
+        const answers = Array.from(svg.children).slice(1);
 
-polygon.addEventListener('click', function (e) {
-    alert('다각형을 클릭했습니다!');
-    console.log('클릭 위치:', e.clientX, e.clientY);
+        answers.forEach((answer, index) => {
+            answer.style.fill = "transparent";
+            answer.style.stroke = "none";
+            answer.style.pointerEvents = "all";
+
+            answer.dataset.id = index;
+        });
+
+        svg.addEventListener("click", e => {
+            const point = getSvgPoint(svg, e);
+
+            if (e.target instanceof SVGGeometryElement) {
+                const id = e.target.dataset.id;
+
+                if (foundList.has(Number(id))) {
+                    console.log("이미 찾은 부분입니다.");
+                    return;
+                }
+                else {
+                    foundList.add(Number(id));
+                    console.log("틀린 부분을 찾았습니다.");
+                }
+
+                svgs.forEach(targetSvg => drawCircle(targetSvg, point.x, point.y));
+
+                if (foundList.size === answers.length) {
+                    alert("🎉 모든 틀린 부분을 찾았습니다!");
+                }
+            } else {
+                // 틀린 클릭
+                console.log("여긴 틀린 부분이 아닙니다.");
+            }
+        });
+    });
+
+    // SVG 좌표계에 맞게 마우스 좌표 변환
+    function getSvgPoint(svg, event) {
+        const point = svg.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        return point.matrixTransform(svg.getScreenCTM().inverse());
+    }
+
+    // 클릭한 지점에 원 그리기
+    function drawCircle(svg, x, y) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", 100);
+        circle.setAttribute("fill", "none");
+        circle.setAttribute("stroke", "red");
+        circle.setAttribute("stroke-width", "20");
+        svg.appendChild(circle);
+    }
 });
