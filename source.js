@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const stages = [
-        { left: "images/L1.svg", right: "images/R1.jpg" },
-        { left: "images/L2.svg", right: "images/R2.jpg" },
-        { left: "images/L3.svg", right: "images/R3.jpg" }
+        { left: "images/L1.xml", right: "images/R1.jpg" },
+        { left: "images/L1.xml", right: "images/R2.jpg" },
+        { left: "images/L1.xml", right: "images/R1.jpg" }
     ];
     let currentStage = 0;
     let timer = null;
@@ -58,30 +58,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function initGame(svgs) {
         const foundList = new Set();
+        const busyIds = new Set(); // 🔒 클릭 중인 id를 잠그기 위한 집합
 
         svgs.forEach(svg => {
             const answers = Array.from(svg.children).slice(1);
-            answers.forEach((shape, i) => {
-                shape.style.fill = "transparent";
-                shape.style.stroke = "none";
-                shape.style.pointerEvents = "all";
-                shape.dataset.id = i;
+            answers.forEach((answer, index) => {
+                answer.style.fill = "transparent";
+                answer.style.stroke = "none";
+                answer.style.pointerEvents = "all";
+                answer.dataset.id = index;
             });
 
             svg.addEventListener("click", e => {
-                if (e.target instanceof SVGGeometryElement) {
-                    const id = e.target.dataset.id;
-                    if (foundList.has(id)) return;
-                    foundList.add(id);
+                if (!(e.target instanceof SVGGeometryElement)) return;
+                const id = e.target.dataset.id;
+                if (!id) return;
 
-                    const point = getSvgPoint(svg, e);
-                    svgs.forEach(s => drawCircle(s, point.x, point.y));
+                // 🧷 이미 찾은 곳 or 잠금 중이면 즉시 return
+                if (foundList.has(id) || busyIds.has(id)) return;
 
-                    if (foundList.size === answers.length) {
-                        clearInterval(timer);
-                        alert("🎯 스테이지 클리어!");
-                        nextStage();
+                // 🔒 잠금 추가 — 다른 클릭 이벤트가 들어와도 무시됨
+                busyIds.add(id);
+
+                // 바로 pointer-events 해제 (물리적 클릭 차단)
+                const sameIdShapes = [];
+                svgs.forEach(s => {
+                    const shape = s.querySelector(`[data-id="${id}"]`);
+                    if (shape) {
+                        shape.style.pointerEvents = "none";
+                        sameIdShapes.push(shape);
                     }
+                });
+
+                // 논리적으로 정답 추가
+                foundList.add(id);
+
+                // 시각적 효과: 중심 좌표 기준 원 그리기
+                sameIdShapes.forEach(shape => {
+                    const svgEl = shape.ownerSVGElement;
+                    const bbox = shape.getBBox();
+                    const cx = bbox.x + bbox.width / 2;
+                    const cy = bbox.y + bbox.height / 2;
+                    drawCircle(svgEl, cx, cy);
+                });
+
+                // 🔓 모든 처리 완료 후 잠금 해제 (사실상 필요 없지만 안전하게)
+                busyIds.delete(id);
+
+                if (foundList.size === answers.length) {
+                    clearInterval(timer);
+                    alert("🎯 스테이지 클리어!");
+                    nextStage();
                 }
             });
         });
