@@ -4,18 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>틀린 사진 찾기</title>
-
+    <title>틀린 그림 찾기</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <h1>틀린 사진 찾기</h1>
+    <!-- 🎯 로비 화면 -->
+    <div id="lobby" class="center">
+        <h1>틀린 그림 찾기</h1>
+        <p>두 그림의 차이점을 모두 찾아보세요!</p>
+        <button id="startBtn">게임 시작</button>
+    </div>
 
-    <!-- pointer-events="all" data-id="1" -->
+    <!-- 🎮 게임 화면 -->
+    <div id="game" style="display:none;">
+        <h1 id="stageTitle"></h1>
+        <div id="timer">⏱ 3:00</div>
+        <div class="canvas-container"></div>
+    </div>
 
-    <div class="canvas-container">
-
+    <!-- 🏁 엔딩 화면 -->
+    <div id="ending" style="display:none;" class="center">
+        <h1>🎉 모든 스테이지 클리어!</h1>
+        <p>수고하셨습니다!</p>
+        <button id="restartBtn">다시 하기</button>
     </div>
 
     <script src="source.js"></script>
