@@ -6,7 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     let currentStage = 0;
     let timer = null;
-    let timeLeft = 180; // 3분 (초 단위)
+    let timeLeft = 180; // 총 3분
+    let timerStarted = false;
+    let gameEnded = false; // 🚨 타이머 종료 후 중복 처리 방지
 
     const lobby = document.getElementById("lobby");
     const game = document.getElementById("game");
@@ -20,17 +22,18 @@ document.addEventListener("DOMContentLoaded", () => {
         game.style.display = "block";
         currentStage = 0;
         loadStage(currentStage);
+
+        if (!timerStarted) {
+            startTimer();
+            timerStarted = true;
+        }
     });
 
     restartBtn.addEventListener("click", () => location.reload());
 
     function loadStage(index) {
-        clearInterval(timer);
-        timeLeft = 180; // 매 스테이지마다 타이머 리셋
-        updateTimerDisplay();
-
         const { left, right } = stages[index];
-        const container = document.querySelector(".canvas-container");
+        const container = document.querySelector(".svg-container");
         container.innerHTML = "";
 
         fetch(left)
@@ -52,13 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 document.getElementById("stageTitle").textContent = `Stage ${index + 1}`;
                 initGame([leftSvg, rightSvg]);
-                startTimer();
             });
     }
 
     function initGame(svgs) {
         const foundList = new Set();
-        const busyIds = new Set(); // 🔒 클릭 중인 id를 잠그기 위한 집합
+        const busyIds = new Set();
 
         svgs.forEach(svg => {
             const answers = Array.from(svg.children).slice(1);
@@ -70,65 +72,71 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             svg.addEventListener("click", e => {
-                if (!(e.target instanceof SVGGeometryElement)) return;
-                const id = e.target.dataset.id;
+                if (gameEnded) return; // 🚫 타이머 끝난 후 클릭 무효
+
+                const target = e.target;
+                if (!(target instanceof SVGGeometryElement)) {
+                    // 틀린 곳 클릭 시 10초 차감
+                    timeLeft = Math.max(0, timeLeft - 10);
+                    flashTimerRed();
+                    updateTimerDisplay();
+                    return;
+                }
+
+                const id = target.dataset.id;
                 if (!id) return;
-
-                // 🧷 이미 찾은 곳 or 잠금 중이면 즉시 return
                 if (foundList.has(id) || busyIds.has(id)) return;
-
-                // 🔒 잠금 추가 — 다른 클릭 이벤트가 들어와도 무시됨
                 busyIds.add(id);
 
-                // 바로 pointer-events 해제 (물리적 클릭 차단)
-                const sameIdShapes = [];
+                // pointer-events 비활성화
                 svgs.forEach(s => {
                     const shape = s.querySelector(`[data-id="${id}"]`);
-                    if (shape) {
-                        shape.style.pointerEvents = "none";
-                        sameIdShapes.push(shape);
-                    }
+                    if (shape) shape.style.pointerEvents = "none";
                 });
 
-                // 논리적으로 정답 추가
                 foundList.add(id);
 
-                // 시각적 효과: 중심 좌표 기준 원 그리기
-                sameIdShapes.forEach(shape => {
-                    const svgEl = shape.ownerSVGElement;
-                    const bbox = shape.getBBox();
-                    const cx = bbox.x + bbox.width / 2;
-                    const cy = bbox.y + bbox.height / 2;
-                    drawCircle(svgEl, cx, cy);
-                });
+                // 중심 좌표로 원 표시
+                const bbox = target.getBBox();
+                const cx = bbox.x + bbox.width / 2;
+                const cy = bbox.y + bbox.height / 2;
+                svgs.forEach(s => drawCircle(s, cx, cy));
 
-                // 🔓 모든 처리 완료 후 잠금 해제 (사실상 필요 없지만 안전하게)
                 busyIds.delete(id);
 
                 if (foundList.size === answers.length) {
-                    clearInterval(timer);
-                    alert("🎯 스테이지 클리어!");
-                    nextStage();
+                    setTimeout(() => {
+                        alert("🎯 스테이지 클리어!");
+                        nextStage();
+                    }, 500); // 300ms 정도 기다리면 원이 보임
                 }
             });
         });
     }
 
     function nextStage() {
+        if (gameEnded) return;
         currentStage++;
-        if (currentStage < stages.length) loadStage(currentStage);
-        else showEnding();
+        if (currentStage < stages.length) {
+            loadStage(currentStage);
+        } else {
+            clearInterval(timer);
+            showEnding("clear");
+        }
     }
 
     function startTimer() {
         timer = setInterval(() => {
-            timeLeft--;
-            updateTimerDisplay();
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                alert("⏰ 시간 종료!");
-                showEnding();
+                if (!gameEnded) {
+                    gameEnded = true;
+                    showEnding("timeout");
+                }
+                return;
             }
+            timeLeft--;
+            updateTimerDisplay();
         }, 1000);
     }
 
@@ -138,16 +146,26 @@ document.addEventListener("DOMContentLoaded", () => {
         timerDisplay.textContent = `⏱ ${min}:${sec}`;
     }
 
-    function showEnding() {
-        game.style.display = "none";
-        ending.style.display = "block";
+    function flashTimerRed() {
+        timerDisplay.classList.add("flash");
+        setTimeout(() => timerDisplay.classList.remove("flash"), 500);
     }
 
-    function getSvgPoint(svg, event) {
-        const point = svg.createSVGPoint();
-        point.x = event.clientX;
-        point.y = event.clientY;
-        return point.matrixTransform(svg.getScreenCTM().inverse());
+    function showEnding(reason = "clear") {
+        gameEnded = true;
+        game.style.display = "none";
+        ending.style.display = "block";
+
+        const title = ending.querySelector("h1");
+        const msg = ending.querySelector("p");
+
+        if (reason === "timeout") {
+            title.textContent = "⏰ 시간 종료!";
+            msg.textContent = "아쉽네요. 다음엔 더 빠르게 찾아보세요!";
+        } else {
+            title.textContent = "🎉 모든 스테이지 클리어!";
+            msg.textContent = "축하합니다! 완벽한 관찰력이네요!";
+        }
     }
 
     function drawCircle(svg, x, y) {

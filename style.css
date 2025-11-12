@@ -1,21 +1,21 @@
 body {
-    margin: 0;
+    margin: 1rem;
     font-family: "Pretendard", sans-serif;
     text-align: center;
     background-color: #fefefe;
 }
 
-.center {
+/* .center {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-}
+} */
 
 h1 {
     font-size: 2rem;
-    margin-bottom: 1rem;
+    margin: 0;
 }
 
 button {
@@ -33,21 +33,30 @@ button:hover {
     background-color: #ff3838;
 }
 
-.canvas-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
+#timer {
+    font-size: 1.4rem;
+    color: #333;
+    margin: 6px;
+    margin-bottom: 8px;
+}
+
+.svg-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    place-items: center
 }
 
 svg {
-    width: 45%;
+    width: 96%;
     border: 3px solid #ccc;
     border-radius: 8px;
 }
 
-#timer {
-    font-size: 1.4rem;
-    margin-top: 10px;
-    color: #333;
+@media (max-width: 768px) {
+    .svg-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        place-items: center
+    }
 }
