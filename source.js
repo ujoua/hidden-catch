@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const stages = [
-        { left: "images/L1.xml", right: "images/R1.jpg" },
-        { left: "images/L1.xml", right: "images/R2.jpg" },
-        { left: "images/L1.xml", right: "images/R1.jpg" }
+        { left: "images/1.xml", right: "images/1R.jpg" },
+        { left: "images/2.xml", right: "images/2R.jpg" },
+        { left: "images/3.xml", right: "images/3R.jpg" }
     ];
     let currentStage = 0;
     let timer = null;
@@ -96,11 +96,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 foundList.add(id);
 
-                // 중심 좌표로 원 표시
-                const bbox = target.getBBox();
-                const cx = bbox.x + bbox.width / 2;
-                const cy = bbox.y + bbox.height / 2;
-                svgs.forEach(s => drawCircle(s, cx, cy));
+                // 클릭 좌표로 원 표시
+                const point = getSvgPoint(svg, e);
+                svgs.forEach(s => drawCircle(s, point.x, point.y));
 
                 busyIds.delete(id);
 
@@ -166,6 +164,13 @@ document.addEventListener("DOMContentLoaded", () => {
             title.textContent = "🎉 모든 스테이지 클리어!";
             msg.textContent = "축하합니다! 완벽한 관찰력이네요!";
         }
+    }
+
+    function getSvgPoint(svg, event) {
+        const point = svg.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        return point.matrixTransform(svg.getScreenCTM().inverse());
     }
 
     function drawCircle(svg, x, y) {
