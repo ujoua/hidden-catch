@@ -1,25 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
     const stages = [
-        { left: "images/1.xml", right: "images/1R.jpg" },
-        { left: "images/2.xml", right: "images/2R.jpg" },
-        { left: "images/3.xml", right: "images/3R.jpg" }
+        { level: "images/1.xml", left: "images/1L.jpg", right: "images/1R.jpg" },
+        { level: "images/2.xml", left: "images/2L.jpg", right: "images/2R.jpg" },
+        { level: "images/3.xml", left: "images/3L.jpg", right: "images/3R.jpg" },
     ];
     let currentStage = 0;
-    let timer = null;
-    let timeLeft = 180; // 총 3분
-    let timerStarted = false;
-    let gameEnded = false; // 🚨 타이머 종료 후 중복 처리 방지
 
-    const lobby = document.getElementById("lobby");
+    let timer = null;
+    let timeLeft = 180;
+    let timerStarted = false;
+    let gameEnded = false;
+
+    const starting = document.getElementById("starting");
     const game = document.getElementById("game");
     const ending = document.getElementById("ending");
+
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
     const timerDisplay = document.getElementById("timer");
 
     startBtn.addEventListener("click", () => {
-        lobby.style.display = "none";
+        starting.style.display = "none";
         game.style.display = "block";
+
         currentStage = 0;
         loadStage(currentStage);
 
@@ -31,39 +34,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
     restartBtn.addEventListener("click", () => location.reload());
 
-    function loadStage(index) {
-        const { left, right } = stages[index];
-        const container = document.querySelector(".svg-container");
-        container.innerHTML = "";
+    function loadStage(index) { // 정답, 이미지 로딩 
+        const { level, left, right } = stages[index];
+        const leftSvg = document.getElementById("leftSvg");
+        const rightSvg = document.getElementById("rightSvg");
 
-        fetch(left)
+        const leftImage = leftSvg.querySelector("image");
+        const rightImage = rightSvg.querySelector("image");
+
+        leftImage.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", left);
+        rightImage.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", right);
+
+        const leftShapeGroup = document.getElementsByClassName("shapeGroup")[0];
+        const righttShapeGroup = document.getElementsByClassName("shapeGroup")[1];
+
+        fetch(level)
             .then(res => res.text())
             .then(svgText => {
                 const parser = new DOMParser();
-                const leftSvg = parser.parseFromString(svgText, "image/svg+xml").querySelector("svg");
-                const rightSvg = leftSvg.cloneNode(true);
+                const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+                const svgEl = svgDoc.querySelector("svg");
+                const shape = Array.from(svgEl.querySelectorAll("svg > *")).slice(1);
 
-                // 이미지 교체
-                const rightImage = rightSvg.querySelector("image");
-                if (rightImage)
-                    rightImage.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", right);
+                // leftImage.after(...shape);
+                // rightImage.after(...shape.map(el => el.cloneNode(true)));
 
-                leftSvg.id = "레이어_1";
-                rightSvg.id = "레이어_2";
-                container.appendChild(leftSvg);
-                container.appendChild(rightSvg);
+                const shapeString = shape.map(el => el.outerHTML).join("\n");
+                leftShapeGroup.innerHTML = shapeString;
+                righttShapeGroup.innerHTML = shapeString;
 
                 document.getElementById("stageTitle").textContent = `Stage ${index + 1}`;
                 initGame([leftSvg, rightSvg]);
             });
     }
 
-    function initGame(svgs) {
+    function initGame(svgs) { // 정답 작업
         const foundList = new Set();
         const busyIds = new Set();
+        const leftCircleGroup = document.getElementsByClassName("circleGroup")[0];
+        const rightCircleGroup = document.getElementsByClassName("circleGroup")[1];
+        leftCircleGroup.innerHTML = "";
+        rightCircleGroup.innerHTML = "";
 
         svgs.forEach(svg => {
-            const answers = Array.from(svg.children).slice(1);
+            const shapeGroup = svg.getElementsByClassName("shapeGroup")[0];
+            const answers = Array.from(shapeGroup.children);
             answers.forEach((answer, index) => {
                 answer.style.fill = "transparent";
                 answer.style.stroke = "none";
@@ -72,14 +87,13 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             svg.addEventListener("click", e => {
-                if (gameEnded) return; // 🚫 타이머 끝난 후 클릭 무효
+                if (gameEnded) return;
 
                 const target = e.target;
                 if (!(target instanceof SVGGeometryElement)) {
-                    // 틀린 곳 클릭 시 10초 차감
                     timeLeft = Math.max(0, timeLeft - 10);
                     flashTimerRed();
-                    updateTimerDisplay();
+                    updateTimer();
                     return;
                 }
 
@@ -88,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (foundList.has(id) || busyIds.has(id)) return;
                 busyIds.add(id);
 
-                // pointer-events 비활성화
                 svgs.forEach(s => {
                     const shape = s.querySelector(`[data-id="${id}"]`);
                     if (shape) shape.style.pointerEvents = "none";
@@ -96,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 foundList.add(id);
 
-                // 클릭 좌표로 원 표시
                 const point = getSvgPoint(svg, e);
                 svgs.forEach(s => drawCircle(s, point.x, point.y));
 
@@ -106,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => {
                         alert("🎯 스테이지 클리어!");
                         nextStage();
-                    }, 500); // 300ms 정도 기다리면 원이 보임
+                    }, 500);
                 }
             });
         });
@@ -114,7 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function nextStage() {
         if (gameEnded) return;
-        currentStage++;
+
+        ++currentStage;
         if (currentStage < stages.length) {
             loadStage(currentStage);
         } else {
@@ -134,11 +147,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             timeLeft--;
-            updateTimerDisplay();
+            updateTimer();
         }, 1000);
     }
 
-    function updateTimerDisplay() {
+    function updateTimer() {
         const min = Math.floor(timeLeft / 60);
         const sec = String(timeLeft % 60).padStart(2, "0");
         timerDisplay.textContent = `⏱ ${min}:${sec}`;
@@ -181,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
         circle.setAttribute("fill", "none");
         circle.setAttribute("stroke", "red");
         circle.setAttribute("stroke-width", "20");
-        svg.appendChild(circle);
+
+        svg.getElementsByClassName("circleGroup")[0].appendChild(circle);
     }
 });

@@ -4,27 +4,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>틀린 그림 찾기</title>
+    <title>다른 사진 찾기</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- 🎯 로비 화면 -->
-    <div id="lobby" class="center">
-        <h1>틀린 그림 찾기</h1>
+    <div id="starting">
+        <h1>다른 사진 찾기</h1>
         <p>두 그림의 차이점을 모두 찾아보세요!</p>
-        <button id="startBtn">게임 시작</button>
+        <button id="startBtn">시작 하기</button>
     </div>
 
-    <!-- 🎮 게임 화면 -->
     <div id="game" style="display:none;">
         <h1 id="stageTitle"></h1>
         <div id="timer">⏱ 3:00</div>
-        <div class="svg-container"></div>
+        <div class="svg-container">
+            <svg id="leftSvg" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 4000 3000"
+                style="enable-background:new 0 0 4000 3000;" xml:space="preserve">
+                <image width="100%" xlink:href=""> </image>
+                <g class="shapeGroup"></g>
+                <g class="circleGroup"></g>
+            </svg>
+            <svg id="rightSvg" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 4000 3000"
+                style="enable-background:new 0 0 4000 3000;" xml:space="preserve">
+                <image width="100%" xlink:href=""> </image>
+                <g class="shapeGroup"></g>
+                <g class="circleGroup"></g>
+            </svg>
+        </div>
     </div>
 
-    <!-- 🏁 엔딩 화면 -->
-    <div id="ending" style="display:none;" class="center">
+    <div id="ending" style="display:none;">
         <h1>🎉 모든 스테이지 클리어!</h1>
         <p>수고하셨습니다!</p>
         <button id="restartBtn">다시 하기</button>

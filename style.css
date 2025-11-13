@@ -5,14 +5,6 @@ body {
     background-color: #fefefe;
 }
 
-/* .center {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-} */
-
 h1 {
     font-size: 2rem;
     margin: 0;
@@ -38,6 +30,28 @@ button:hover {
     color: #333;
     margin: 6px;
     margin-bottom: 8px;
+}
+
+#timer.flash {
+    color: red;
+    animation: flashTimer 0.5s ease-in-out;
+}
+
+@keyframes flashTimer {
+    0% {
+        transform: scale(1);
+        color: red;
+    }
+
+    50% {
+        transform: scale(1.2);
+        color: #ff6b6b;
+    }
+
+    100% {
+        transform: scale(1);
+        color: red;
+    }
 }
 
 .svg-container {
