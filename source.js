@@ -54,10 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const parser = new DOMParser();
                 const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
                 const svgEl = svgDoc.querySelector("svg");
-                const shape = Array.from(svgEl.querySelectorAll("svg > *")).slice(1);
+                let shape = Array.from(svgEl.querySelectorAll('g[id="레이어_3"] > *'));
 
-                // leftImage.after(...shape);
-                // rightImage.after(...shape.map(el => el.cloneNode(true)));
+                shape = shape.length ? shape : Array.from(svgEl.querySelectorAll("svg > *"));;
+                shape = shape.slice(1);
 
                 const shapeString = shape.map(el => el.outerHTML).join("\n");
                 leftShapeGroup.innerHTML = shapeString;
